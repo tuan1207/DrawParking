@@ -1,4 +1,4 @@
-import { _decorator, Component, Graphics, director, Node, Collider2D, Contact2DType, tween, PhysicsSystem2D, easing, UITransform, EventTouch, Vec2, Vec3 } from 'cc';
+import { _decorator, Component, Graphics, director, EPhysics2DDrawFlags, Node, Collider2D, Contact2DType, tween, PhysicsSystem2D, easing, UITransform, EventTouch, Vec2, Vec3 } from 'cc';
 import { GameManger } from './GameManger';
 const { ccclass, property } = _decorator;
 
@@ -26,11 +26,11 @@ export class CarMove extends Component {
     public isAngleOyAtive: boolean = false;
     public active: boolean = false;
     public saveLine: number = null;
-    public moveSpeed = 65;
+    public velocity = 100;
     public currentPos = 0;
     public currentAngle: number = null;
     public pointCounter: number = 0;
-    public maxPointInterval: number = 5;
+    public maxPointInterval: number = 7;
     public carArrived: boolean = false;
     public carContact: boolean = false;
 
@@ -146,7 +146,7 @@ export class CarMove extends Component {
         this.line.stroke();
     }
 
-    angleOy(point1: Vec2, point2: Vec2): number {
+    angleOy(point1: Vec3, point2: Vec3): number {
         if (!this.isAngleOyAtive) {
             return;
         }
@@ -157,51 +157,60 @@ export class CarMove extends Component {
         return angleDeg;
 
     }
-
-    
-    moveToNextPoint(nextMovePos: Vec2, nextAnglePos: Vec2) {
+//option1: xe di chuyển liên tiếp theo các điểm trong mảng listPoints với một thời gian nhất định (xoay hướng xe chưa tối ưu)
+    moveToNextPoint(nextAnglePos: Vec3, nextMovePos: Vec3) {
         if(!this.active){
             return;
         }
-        let movePos = this.listPoints[this.currentPos];
-        let anglePos = this.listPoints[this.currentPos];
 
+        let anglePos = new Vec3(this.listPoints[this.currentPos].x, this.listPoints[this.currentPos].y, 0);
+    //     let angle = this.angleOy(anglePos, nextAnglePos);
         let angle = this.angleOy(anglePos, nextAnglePos);
-        this.car.setRotationFromEuler(new Vec3(0, 0, angle));;
-    
-        let distance = Vec2.distance(movePos, nextMovePos);
-        let moveTime = distance / this.moveSpeed; // this.moveSpeed là tốc độ di chuyển của xe
-    
+        if(angle > 10 || angle < -10){
+            this.car.setRotationFromEuler(new Vec3(0, 0, angle));
+        }else if(angle > 1 || angle < -1){
+            this.car.setRotationFromEuler(new Vec3(0, 0, 0));
+        }
+        this.currentPos += 1;
+        let nextNextMovePos = new Vec3(this.listPoints[this.currentPos + 2].x, this.listPoints[this.currentPos + 2].y, 0);
+        let distance = Vec3.distance(nextMovePos, nextNextMovePos);
+        let moveTime = distance / this.velocity;
         tween(this.car)
-            .to(moveTime, { position: new Vec3(nextMovePos.x, nextMovePos.y, 0) }, { easing: easing.sineInOut })
+            .to(moveTime, { position: nextAnglePos })
             .call(() => {
-                // GameManger.instance.completeLv();
                 let car = this.car.position;
                 let park = this.park.position;
                 let distance = Vec2.distance(car, park);
-                if(distance <= 25){
+                let angle = this.angleOy(car, park);
+                if(distance <= 25 && angle <=30){
                     this.carArrivedFunc();
+                    this.car.setRotationFromEuler(new Vec3(0, 0, 0));
                     this.isAngleOyAtive = false;
                     this.stopFunc();
-                    // this.car.active = false;
-                    // this.park.active = false;
-                    // this.line.clear();
-                }
-                // Sau khi di chuyển xong, chuyển sang điểm tiếp theo
-                this.currentPos += 1;
-                if (this.currentPos < this.listPoints.length - 1) {
-                    let nextNextMovePos = this.listPoints[this.currentPos + 1];
-                    let nextNextAnglePos = this.listPoints[this.currentPos + 3];
-                    this.moveToNextPoint(nextNextMovePos, nextNextAnglePos);
-                    
-                } else {
-                    // Xử lý khi di chuyển hoàn thành
+                }else if(distance <= 25 && angle > 30){
+                    this.stopFunc();
                     this.isAngleOyAtive = false;
-                    
+                    this.scheduleOnce(GameManger.instance.reloadScene, 1.5);
                 }
+                // this.currentPos += 1;
+                let nextNextMovePos = new Vec3(this.listPoints[this.currentPos + 1].x, this.listPoints[this.currentPos + 1].y, 0);
+                let nextNextAnglePos = new Vec3(this.listPoints[this.currentPos + 3].x, this.listPoints[this.currentPos + 3].y, 0);
+                this.moveToNextPoint(nextNextAnglePos, nextNextMovePos);
             })
             .start();
     }
+    carMove(){
+        if(!this.active){
+            return;
+        }
+        if (this.listPoints.length <= 1) return;
+        this.isAngleOyAtive = true;
+        let nextMovePos = new Vec3(this.listPoints[this.currentPos + 1].x, this.listPoints[this.currentPos + 1].y, 0);
+        let nextAnglePos = new Vec3(this.listPoints[this.currentPos + 3].x, this.listPoints[this.currentPos + 3].y, 0);
+        this.moveToNextPoint(nextAnglePos, nextMovePos);
+    }
+        
+//option2: xe di chuyển với đến điểm đích với "t = S(listPoint.length)/v" (chưa di chuyển theo đường được vẽ ra, chưa xoay hướng xe)
 
     carArrivedFunc() {
         this.carArrived = true;
@@ -209,16 +218,7 @@ export class CarMove extends Component {
         GameManger.instance.checkCompleteLv();
     }
 
-    carMove(){
-        if(!this.active){
-            return;
-        }
-        if (this.listPoints.length <= 1) return;
-        this.isAngleOyAtive = true;
-        let nextMovePos = this.listPoints[this.currentPos + 1];
-        let nextAnglePos = this.listPoints[this.currentPos + 3];
-        this.moveToNextPoint(nextMovePos, nextAnglePos);
-    }
+    
     
 }
 

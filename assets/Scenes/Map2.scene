@@ -1067,13 +1067,13 @@
     "_restitution": 0,
     "_offset": {
       "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
+      "x": 1.7,
+      "y": 4.2
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 42,
-      "height": 70
+      "width": 25,
+      "height": 50
     },
     "_id": "a1twD7htJPBovE2OAZuHVK"
   },
@@ -1372,13 +1372,13 @@
     "_restitution": 0,
     "_offset": {
       "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
+      "x": 1.7,
+      "y": 4.2
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 42,
-      "height": 70
+      "width": 25,
+      "height": 50
     },
     "_id": "3fU06jhttAnbwvjwm/PNmo"
   },

@@ -659,6 +659,7 @@
       "__id__": 16
     },
     "distanceBtw2P": 2,
+    "sceneName": "Map1",
     "_id": "76yLy8k0ZO4K9wVNEINOzu"
   },
   {
@@ -811,13 +812,13 @@
     "_restitution": 0,
     "_offset": {
       "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
+      "x": 1,
+      "y": 2
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 42,
-      "height": 70
+      "width": 25,
+      "height": 50
     },
     "_id": "b0WJ9zopdIPaC5DLkI6huW"
   },
