@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, NodeEventType, EventTouch, UITransform, Button, director } from 'cc';
+import { _decorator, Component, Node, NodeEventType, AudioClip, EventTouch, UITransform, Button, director } from 'cc';
 import { CarMove } from './CarMove';
 const { ccclass, property } = _decorator;
 
@@ -16,6 +16,17 @@ export class GameManger extends Component {
     car2: Node = null;
     @property(Node)
     car3: Node = null;
+//Audio
+    @property(AudioClip)
+    audioClick: AudioClip = null;
+    @property(AudioClip)
+    carStart: AudioClip = null;
+    @property(AudioClip)
+    drawLine: AudioClip = null;
+    @property(AudioClip)
+    completeLV: AudioClip = null;
+    @property(AudioClip)
+    carDestroy: AudioClip = null;
 //Any
     @property(Node)
     canvas: Node = null;
@@ -57,6 +68,7 @@ export class GameManger extends Component {
     onTouchMove(event: EventTouch){
         if(this.carSelected) {
             this.carSelected.getComponent(CarMove).onTouchMove(event);
+            this.drawLine.play();
         }
     }
 
@@ -95,7 +107,9 @@ export class GameManger extends Component {
 
     onClick(){
         this.startBtn.active = false;    
+        this.audioClick.play();
         for(let cars of this.carsAliveArray){
+            this.carStart.play();
             cars.getComponent(CarMove).startFunc();
             cars.getComponent(CarMove).isAngleOyAtive = true;
             cars.getComponent(CarMove).carMove();
@@ -110,6 +124,7 @@ export class GameManger extends Component {
             }
         }
         this.completeNode.active = true;
+        this.completeLV.play();
     }
     reloadScene(){
         director.loadScene(this.sceneName);
@@ -122,14 +137,6 @@ export class GameManger extends Component {
                 this.scheduleOnce(this.reloadScene, 2.2);
                 return; 
             }
-            let carCont = cars.getComponent(CarMove);
-            // if(carCont.carContact){
-            //     carCont.destroyCar.active = true;
-            //     carCont.stopFunc();
-            //     // this.scheduleOnce(this.reloadScene, 2.2);
-            //     return; 
-            // }
-            
         }
         this.carContact();
     }
