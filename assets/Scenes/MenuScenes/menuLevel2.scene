@@ -799,6 +799,10 @@
     "_enabled": true,
     "__prefab": null,
     "sceneName": "menuLevel1",
+    "audioClick": {
+      "__uuid__": "389342ba-6e2a-4169-9692-1fbb53da3bcd",
+      "__expectedType__": "cc.AudioClip"
+    },
     "_id": "c43iPZTblKo7MXlVnDsb7Q"
   },
   {
@@ -994,6 +998,10 @@
     "_enabled": true,
     "__prefab": null,
     "sceneName": "menuLevel3",
+    "audioClick": {
+      "__uuid__": "389342ba-6e2a-4169-9692-1fbb53da3bcd",
+      "__expectedType__": "cc.AudioClip"
+    },
     "_id": "e3aEnDbuxETr1x7TG3yn5q"
   },
   {

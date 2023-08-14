@@ -799,6 +799,10 @@
     "_enabled": true,
     "__prefab": null,
     "sceneName": "menuLevel2",
+    "audioClick": {
+      "__uuid__": "389342ba-6e2a-4169-9692-1fbb53da3bcd",
+      "__expectedType__": "cc.AudioClip"
+    },
     "_id": "66r8ISnxFA3LfvuO4qgtl5"
   },
   {
